@@ -39,7 +39,7 @@ jobs:
         run: |
           # Clone GitOps repo
           rm -rf argocd-dataapp
-          git clone https://github.com/RameezAhmedZaka/argocd-dataapp.git gitops
+          git clone https://github.com/RameezAhmedZaka/argocd-dataapp.git argocd-dataapp
           cd argocd-dataapp
 
           # Update image in deployment.yaml
