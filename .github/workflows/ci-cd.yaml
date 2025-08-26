@@ -38,9 +38,9 @@ jobs:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
           # Clone GitOps repo
-          rm -rf gitops
+          rm -rf argocd-dataapp
           git clone https://github.com/RameezAhmedZaka/argocd-dataapp.git gitops
-          cd gitops
+          cd argocd-dataapp
 
           # Update image in deployment.yaml
           if [[ "$OSTYPE" == "darwin"* ]]; then
