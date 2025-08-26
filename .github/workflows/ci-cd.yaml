@@ -30,3 +30,29 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/datahub-app:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/datahub-app:${{ github.sha }}
+
+      - name: Update GitOps repository
+        shell: bash
+        env:
+          GIT_TOKEN: ${{ secrets.GITOPS_PAT }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: |
+          # Clone GitOps repo
+          rm -rf gitops
+          git clone https://github.com/RameezAhmedZaka/argocd-dataapp.git gitops
+          cd gitops
+
+          # Update image in deployment.yaml
+          if [[ "$OSTYPE" == "darwin"* ]]; then
+            sed -i '' "s|image: .*|image: ${DOCKERHUB_USERNAME}/dataapp:${{ github.sha }}|g" deployment.yaml
+          else
+            sed -i "s|image: .*|image: ${DOCKERHUB_USERNAME}/dataapp:${{ github.sha }}|g" deployment.yaml
+          fi
+
+          # Commit and push
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add deployment.yaml
+          git commit -m "Update image to ${DOCKERHUB_USERNAME}/dataapp:${{ github.sha }}"
+          git push https://$GIT_TOKEN@github.com/RameezAhmedZaka/argocd-dataapp.git HEAD:main
+
