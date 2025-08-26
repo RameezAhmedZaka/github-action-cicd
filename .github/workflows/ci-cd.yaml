@@ -42,12 +42,7 @@ jobs:
           git clone https://github.com/RameezAhmedZaka/argocd-dataapp.git argocd-dataapp
           cd argocd-dataapp
 
-          # Update image in deployment.yaml
-          if [[ "$OSTYPE" == "darwin"* ]]; then
-            sed -i '' "s|image: .*|image: ${DOCKERHUB_USERNAME}/dataapp:${{ github.sha }}|g" deployment.yaml
-          else
-            sed -i "s|image: .*|image: ${DOCKERHUB_USERNAME}/dataapp:${{ github.sha }}|g" deployment.yaml
-          fi
+          sed -i "s|image: .*|image: ${DOCKERHUB_USERNAME}/dataapp:${GITHUB_SHA}|g" deployment.yaml
 
           # Commit and push
           git config --global user.name "GitHub Actions"
