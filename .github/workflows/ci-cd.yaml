@@ -28,5 +28,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/grade-api:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/grade-api:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/datahub-app:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/datahub-app:${{ github.sha }}
