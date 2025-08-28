@@ -2,52 +2,52 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  build-and-push:
-    runs-on:  ubuntu-latest
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      # Checkout source code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Log in to Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/datahub-app:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/datahub-app:${{ github.sha }}
-
-      - name: Update GitOps repository
-        shell: bash
-        env:
-          GIT_TOKEN: ${{ secrets.GITOPS_PAT }}
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      # Build & Push Docker Image
+      - name: Build and Push Docker Image
         run: |
-          # Clone GitOps repo
-          rm -rf argocd-dataapp
-          git clone https://github.com/RameezAhmedZaka/argocd-dataapp.git argocd-dataapp
-          cd argocd-dataapp/argocd-dataapp
+          IMAGE=rameezdocker69/dataapp:${{ github.sha }}
+          docker build -t $IMAGE .
+          docker push $IMAGE
 
-          sed -i "s|image: .*|image: ${DOCKERHUB_USERNAME}/dataapp:${GITHUB_SHA}|g" deployment.yaml
+      # Checkout GitOps repo
+      - name: Checkout GitOps repo
+        uses: actions/checkout@v3
+        with:
+          repository: RameezAhmedZaka/argocd-dataapp
+          token: ${{ secrets.GITOPS_PAT }}
+          path: gitops-repo
 
-          # Commit and push
+      # Update image in Deployment manifest
+      - name: Update Kubernetes Deployment
+        run: |
+          cd gitops-repo/argocd-dataapp
+          sed -i "s|image: .*|image: rameezdocker69/dataapp:${{ github.sha }}|" deployment.yaml
+
+      # Commit & push changes back to GitOps repo
+      - name: Commit and Push changes
+        run: |
+          cd gitops-repo/argocd-dataapp
+          git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
           git add deployment.yaml
-          git commit -m "Update image to ${DOCKERHUB_USERNAME}/dataapp:${{ github.sha }}"
-          git push https://$GIT_TOKEN@github.com/RameezAhmedZaka/argocd-dataapp.git HEAD:main
-
+          git commit -m "Update image to rameezdocker69/dataapp:${{ github.sha }}"
+          git push origin main
