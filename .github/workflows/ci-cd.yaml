@@ -41,7 +41,6 @@ jobs:
           rm -rf argocd-dataapp
           git clone https://github.com/RameezAhmedZaka/argocd-dataapp.git argocd-dataapp
           cd argocd-dataapp/argocd-dataapp
-          ls -l
 
           sed -i "s|image: .*|image: ${DOCKERHUB_USERNAME}/dataapp:${GITHUB_SHA}|g" deployment.yaml
 
