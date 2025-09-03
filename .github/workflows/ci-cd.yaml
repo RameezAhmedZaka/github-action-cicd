@@ -1,17 +1,22 @@
-name: CI/CD Pipeline
 
 on:
   push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
     branches:
-      - main   # 🚀 only trigger on main branch for prod
+      - main
 
 jobs:
+  build-and-push:
+    runs-on:  ubuntu-latest
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout app source code
-      - name: Checkout source repository
+      - name: Checkout code
+      # Checkout source code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       # Log in to Docker Hub
@@ -21,18 +26,37 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
       # Build & Push Docker Image
       - name: Build and Push Docker Image
         run: |
           IMAGE=rameezdocker69/dataapp:${{ github.sha }}
           docker build -t $IMAGE .
           docker push $IMAGE
-          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
 
-      # Checkout GitOps repo (manifests)
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+      # Checkout GitOps repo
       - name: Checkout GitOps repo
         uses: actions/checkout@v3
         with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/datahub-app:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/datahub-app:${{ github.sha }}
+
+      - name: Update GitOps repository
+        shell: bash
+        env:
+          GIT_TOKEN: ${{ secrets.GITOPS_PAT }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: |
+          # Clone GitOps repo
+          rm -rf argocd-dataapp
+          git clone https://github.com/RameezAhmedZaka/argocd-dataapp.git argocd-dataapp
+          cd argocd-dataapp/argocd-dataapp
           repository: RameezAhmedZaka/argocd-dataapp
           token: ${{ secrets.GITOPS_PAT }}
           path: gitops-repo
