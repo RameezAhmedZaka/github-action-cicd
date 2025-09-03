@@ -1,3 +1,5 @@
+name: CI/CD Pipeline
+
 on:
   push:
     branches: [ main ]
@@ -34,35 +36,23 @@ jobs:
         with:
           repository: RameezAhmedZaka/argocd-dataapp
           token: ${{ secrets.GITOPS_PAT }}
-          path: gitops-repo
-
-      - name: Update GitOps repository
-        shell: bash
-        env:
-          GIT_TOKEN: ${{ secrets.GITOPS_PAT }}
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-        run: |
-          # Clone GitOps repo
-          rm -rf argocd-dataapp
-          git clone https://github.com/RameezAhmedZaka/argocd-dataapp.git argocd-dataapp
-          cd argocd-dataapp/
+          path: argocd-dataapp
 
       # Update Kubernetes Deployment (prod overlay only)
-      - name: Update Kubernetes   
+      - name: Update Kubernetes
         run: |
-          ls -R
-          cd overlays/prod
+          ls -R argocd-dataapp
+          cd argocd-dataapp/overlays/prod
           kustomize edit set image rameezdocker69/dataapp=${{ secrets.DOCKERHUB_USERNAME }}/dataapp:${{ github.sha }}
 
       # Commit & Push changes back to GitOps repo
       - name: Commit and Push changes
         run: |
-          cd argocd-dataapp/
+          cd argocd-dataapp
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
-          ls -R
           git add overlays/prod/kustomization.yaml
-          git commit -m "Update image to ${{ secrets.DOCKERHUB_USERNAME }}/dataapp:${{ github.sha }}"
+          git commit -m "Update image to ${{ secrets.DOCKERHUB_USERNAME }}/dataapp:${{ github.sha }}" || echo "No changes to commit"
           git push https://$GIT_TOKEN@github.com/RameezAhmedZaka/argocd-dataapp.git HEAD:main
         env:
           GIT_TOKEN: ${{ secrets.GITOPS_PAT }}
