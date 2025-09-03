@@ -41,7 +41,7 @@ jobs:
         run: |
           cd gitops-repo/argocd-dataapp/overlays/prod
           ls
-          kustomize edit set image dataapp=${{ secrets.DOCKERHUB_USERNAME }}/dataapp:${{ github.sha }}
+          kustomize edit set image rameezdocker69/dataapp=${{ secrets.DOCKERHUB_USERNAME }}/dataapp:${{ github.sha }}
 
       # Commit & Push changes back to GitOps repo
       - name: Commit and Push changes
