@@ -37,11 +37,11 @@ jobs:
           repository: RameezAhmedZaka/argocd-dataapp
           token: ${{ secrets.GITOPS_PAT }}
           path: argocd-dataapp
-
       # Update Kubernetes Deployment (prod overlay only)
       - name: Update Kubernetes
         run: |
           ls -R argocd-dataapp
+          rm -rf gitops-repo
           cd argocd-dataapp/overlays/prod
           kustomize edit set image rameezdocker69/dataapp=${{ secrets.DOCKERHUB_USERNAME }}/dataapp:${{ github.sha }}
 
