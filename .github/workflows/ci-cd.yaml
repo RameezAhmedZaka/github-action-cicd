@@ -45,7 +45,7 @@ jobs:
           # Clone GitOps repo
           rm -rf argocd-dataapp
           git clone https://github.com/RameezAhmedZaka/argocd-dataapp.git argocd-dataapp
-          cd argocd-dataapp/argocd-dataapp
+          cd argocd-dataapp/
 
       # Update Kubernetes Deployment (prod overlay only)
       - name: Update Kubernetes   
