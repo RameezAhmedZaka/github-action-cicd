@@ -40,7 +40,7 @@ jobs:
       # Update Kustomize overlay for prod
       - name: Update prod overlay
         run: |
-          cd argocd-dataapp/overlays/prod/
+          cd argocd-dataapp/argocd-dataapp/overlays/prod
           kustomize edit set image rameezdocker69/dataapp=${{ env.IMAGE }}
 
       # Commit & push changes back to GitOps repo
@@ -49,6 +49,6 @@ jobs:
           cd gitops-repo
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add argocd-dataapp/overlays/prod/kustomization.yaml
+          git add argocd-dataapp/argocd-dataapp/overlays/prod/kustomization.yaml
           git commit -m "🚀 Deploy image ${{ env.IMAGE }} to prod"
           git push origin main
