@@ -50,7 +50,7 @@ jobs:
       # Update Kubernetes Deployment (prod overlay only)
       - name: Update Kubernetes   
         run: |
-          cd gitops-repo/argocd-dataapp/overlays/prod
+          cd gitops-repo/overlays/prod
           ls
           kustomize edit set image rameezdocker69/dataapp=${{ secrets.DOCKERHUB_USERNAME }}/dataapp:${{ github.sha }}
 
