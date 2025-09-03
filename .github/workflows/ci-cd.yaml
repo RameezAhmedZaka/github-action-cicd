@@ -41,6 +41,8 @@ jobs:
       - name: Update prod overlay
         run: |
           cd argocd-dataapp/argocd-dataapp/overlays/prod
+          ls -a
+          pwd
           kustomize edit set image rameezdocker69/dataapp=${{ env.IMAGE }}
 
       # Commit & push changes back to GitOps repo
