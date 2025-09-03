@@ -49,6 +49,7 @@ jobs:
       - name: Commit and Push changes
         run: |
           cd argocd-dataapp
+          ls
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
           git add overlays/prod/kustomization.yaml
