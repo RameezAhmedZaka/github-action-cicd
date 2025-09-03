@@ -51,14 +51,14 @@ jobs:
       - name: Update Kubernetes   
         run: |
           ls -R
-          cd argocd-dataapp/overlays/prod
+          cd overlays/prod
           ls
           kustomize edit set image rameezdocker69/dataapp=${{ secrets.DOCKERHUB_USERNAME }}/dataapp:${{ github.sha }}
 
       # Commit & Push changes back to GitOps repo
       - name: Commit and Push changes
         run: |
-          cd gitops-repo
+          cd argocd-dataapp/
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
           ls -R
