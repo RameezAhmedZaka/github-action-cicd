@@ -36,6 +36,20 @@ jobs:
           token: ${{ secrets.GITOPS_PAT }}
           path: gitops-repo
 
+      - name: Update GitOps repository
+        shell: bash
+        env:
+          GIT_TOKEN: ${{ secrets.GITOPS_PAT }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: |
+          # Clone GitOps repo
+          rm -rf argocd-dataapp
+          git clone https://github.com/RameezAhmedZaka/argocd-dataapp.git argocd-dataapp
+          cd argocd-dataapp/argocd-dataapp
+          repository: RameezAhmedZaka/argocd-dataapp
+          token: ${{ secrets.GITOPS_PAT }}
+          path: gitops-repo
+
       # Update Kubernetes Deployment (prod overlay only)
       - name: Update Kubernetes Deployment
         run: |
