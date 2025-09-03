@@ -52,7 +52,6 @@ jobs:
         run: |
           ls -R
           cd overlays/prod
-          ls
           kustomize edit set image rameezdocker69/dataapp=${{ secrets.DOCKERHUB_USERNAME }}/dataapp:${{ github.sha }}
 
       # Commit & Push changes back to GitOps repo
