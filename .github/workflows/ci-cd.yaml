@@ -40,7 +40,8 @@ jobs:
       - name: Update Kubernetes Deployment
         run: |
           cd gitops-repo/argocd-dataapp/overlays/prod
-          sed -i "s|image: .*|image: ${{ secrets.DOCKERHUB_USERNAME }}/dataapp:${{ github.sha }}|" deployment.yaml
+          ls
+          sed -i "s|image: .*|image: ${{ secrets.DOCKERHUB_USERNAME }}/dataapp:${{ github.sha }}|" kustomization.yaml
 
       # Commit & Push changes back to GitOps repo
       - name: Commit and Push changes
