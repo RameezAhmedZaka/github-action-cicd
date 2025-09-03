@@ -49,7 +49,7 @@ jobs:
           cd gitops-repo
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add argocd-dataapp/overlays/prod/deployment.yaml
+          git add argocd-dataapp/overlays/prod/kustomization.yaml
           git commit -m "Update image to ${{ secrets.DOCKERHUB_USERNAME }}/dataapp:${{ github.sha }}"
           git push https://$GIT_TOKEN@github.com/RameezAhmedZaka/argocd-dataapp.git HEAD:main
         env:
